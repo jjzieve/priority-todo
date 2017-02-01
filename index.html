@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!-- HTML5 Hello world by kirupa - http://www.kirupa.com/html5/getting_your_feet_wet_html5_pg1.htm -->
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<title>Priority TODO</title>
+		<style type="text/css">
+			.todo-container {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin: .75rem;
+				color: white;
+				cursor: pointer;
+				text-align: center;
+			}
+			
+			.todo {
+				padding: 2rem;
+				flex: 11;
+				border-radius: .25rem 0 0 .25rem;
+				font-size: 2rem;
+			}
+			.todo:hover, .todo-action:hover {
+				opacity: 0.5;
+			}
+			
+			.todo-action {
+				flex: 1;
+				border-radius: 0 .25rem .25rem 0;
+				background-color: #636c72;
+				font-size: 2rem;
+				padding: 2rem;
+				font-family: sans-serif;
+			}
+	
+			.high-priority {
+				background-color: #d9534f;
+			}
+			
+			.medium-priority {
+				background-color: #f0ad4e;
+			}
+			
+			.low-priority {
+				background-color: #5cb85c;
+			}
+			
+			.new {
+				opacity: 1!important;
+				background-color: #5bc0de;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="todo-container" v-for="todo in sortedTodos">
+				<div 
+					class="todo" 
+					v-bind:class="todo.priority"
+					v-on:click="edit(todo)"
+				>
+					{{ todo.text }}
+				</div>
+				<div class="todo-action" v-on:click="remove(todo)">X</div>
+			</div>
+			<div class="todo-container">
+				<div class="new todo">
+					<input>
+					<select>
+						<option value="high-priority">High priority</option>
+						<option value="medium-priority">Medium priority</option>
+						<option value="low-priority">Low priority</option>
+					</select>
+				</div>
+				<div class="todo-action" v-on:click="add">+</div>
+			</div>
+		</div>
+		
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script>
+		
+			var PRIORITY_ENUM = {
+				'high-priority': 1,
+				'medium-priority': 2,
+				'low-priority': 3,
+			};
+			
+			// Vue.component('todo', {
+			// 	template: '<div class="{{ priorityClass }}' v-on
+			// })
+
+			var app = new Vue({
+			  el: '#app',
+			  data: {
+			  	todos: [
+			  		{ text: 'Test2', priority: 'low-priority' },
+			  		{ text: 'Test', priority: 'high-priority' },
+			  		{ text: 'Test2', priority: 'low-priority' },
+			  		{ text: 'Test3', priority: 'medium-priority' }
+			  	]
+			  },
+			  computed: {
+			  	sortedTodos() {
+			  		return this.todos.sort((a, b) => {
+			  			return PRIORITY_ENUM[a.priority] > PRIORITY_ENUM[b.priority];
+			  		});
+			  	}
+			  },
+			  methods: {
+				add() {
+					console.log('add');
+				},
+				edit(todo) {
+				alert('edit');
+				},
+				remove(todo) {
+					this.todos.splice(this.todos.indexOf(todo), 1)
+				}
+			  }
+			})
+		</script>
+
+	</body>
+</html>
