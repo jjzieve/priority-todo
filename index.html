@@ -54,32 +54,77 @@
 		</style>
 	</head>
 	<body>
-		<div id="app">
-			<div class="todo-container" v-for="todo in sortedTodos">
-				<div 
-					class="todo" 
-					v-bind:class="todo.priority"
-					v-on:click="edit(todo)"
-				>
-					{{ todo.text }}
+		<div id="view">
+			<div id="app">
+				<div class="todo-container" v-for="todo in sortedTodos">
+					<div 
+						class="todo" 
+						v-bind:class="todo.priority"
+						v-on:click="edit(todo)"
+					>
+						{{ todo.text }}
+					</div>
+					<div class="todo-action" v-on:click="remove(todo)">X</div>
 				</div>
-				<div class="todo-action" v-on:click="remove(todo)">X</div>
-			</div>
-			<div class="todo-container">
-				<!--<div class="new todo">-->
-				<!--	<input>-->
-				<!--	<select>-->
-				<!--		<option value="high-priority">High priority</option>-->
-				<!--		<option value="medium-priority">Medium priority</option>-->
-				<!--		<option value="low-priority">Low priority</option>-->
-				<!--	</select>-->
-				<!--</div>-->
-				<div class="todo-action add" v-on:click="add">+</div>
+				<div class="todo-container">
+					<!--<div class="new todo">-->
+					<!--	<input>-->
+					<!--	<select>-->
+					<!--		<option value="high-priority">High priority</option>-->
+					<!--		<option value="medium-priority">Medium priority</option>-->
+					<!--		<option value="low-priority">Low priority</option>-->
+					<!--<input date>-->
+					<!--	</select>-->
+					<!--</div>-->
+					<div class="todo-action add" v-on:click="add">+</div>
+				</div>
 			</div>
 		</div>
+
 		
 		<script src="https://unpkg.com/vue/dist/vue.js"></script>
 		<script>
+		
+		      //  function route(path,handler){
+        //     routes[path] = {template: template, handler: handler};
+        // }
+        
+        // route('/', 'home', () => {
+        //     console.log('home');
+        //     const greeting = 'yo';
+        //     return greeting;
+        // });
+        // route('/spots', 'template1', () => {
+        //     console.log('spots');
+        //     const greeting = 'yo';
+        //     // return document.getElementById('template1').innerHTML;
+        //     return `<h1>Page 1: ${greeting} </h1><p ${greeting}</p>`;
+        // });
+        // route('/spot', 'template2', () => {
+        //     console.log('add spot');
+        // });
+        // route('/spot/:id', 'template2', () => {
+        //     console.log('edit spot');
+        // });
+        
+        // let el = null;
+        // function router () {
+        //     // Lazy load view element:
+        //     el = el || document.getElementById('view');
+        //     // Current route url (getting rid of '#' in hash as well):
+        //     let url = window.location.hash.slice(1) || '/';
+        //     // Get route by url:
+        //     let route = routes[url];
+        //     // Do we have both a view and a route?
+        //     if (el && route.handler) {
+        //         // Render route template with John Resig's template engine:
+        //         el.innerHTML = route.handler();
+        //     }
+        // }
+        // // Listen on hash change:
+        // window.addEventListener('hashchange', router);
+        // // Listen on page load:
+        // window.addEventListener('load', router);
 		
 			var PRIORITY_ENUM = {
 				'high-priority': 1,
