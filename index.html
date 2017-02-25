@@ -97,12 +97,12 @@
 			}
 			
 			input[type="submit"]:hover {
-				background-color: #489174;
+				background-color: #5bc0de;
 				
 			}
 			input[type="submit"] {
 				border: none;
-				background-color: #0E573A;
+				background-color: #0275d8;
 				color: white;
 				cursor: pointer;
 			}
@@ -128,10 +128,11 @@
 		</div>
 
 		<div id="edit-todo">
-			<form>
+			<form onsubmit="app.submit(event)">
 				<a href="javascript:void(0);" class="closebtn" onclick="closeEdit()">&times;</a>
-				<textarea class="todo-textarea"></textarea>
-				<select class="todo-priority-select">
+				<input id="todo-id" type="hidden"> 
+				<textarea id="todo-text" class="todo-textarea"></textarea>
+				<select id="todo-priority" class="todo-priority-select">
 					<option value=0>High priority</option>
 					<option value=1>Medium priority</option>
 					<option value=2>Low priority</option>
@@ -145,6 +146,7 @@
 			function closeEdit(){
 				document.getElementById("edit-todo").style.width = "0";
 			}
+			
 			var PRIORITY_ENUM = ['high-priority', 'medium-priority', 'low-priority'];
 			
 			var app = new Vue({
@@ -173,14 +175,47 @@
 			  },
 			  methods: {
 				add() {
+					//reset the form
+					document.getElementById("todo-id").value = '';
+					document.getElementById("todo-text").value = '';
+					document.getElementById("todo-priority").value = 2;
 					document.getElementById("edit-todo").style.width = "100%";
 				},
 				edit(todo) {
-					console.log('edit');
+					// populate the form
+					document.getElementById("todo-id").value = todo.id;
+					document.getElementById("todo-text").value = todo.text;
+					document.getElementById("todo-priority").value = todo.priority;
 					document.getElementById("edit-todo").style.width = "100%";
 				},
 				remove(todo) {
-					this.todos.splice(this.todos.indexOf(todo), 1)
+					this.todos.splice(this.todos.indexOf(todo), 1);
+				},
+				submit(event) {
+					event.preventDefault();
+					document.getElementById("edit-todo").style.width = "0";
+					
+					// this.todos.push(this.newTodoText)
+					let id = document.getElementById("todo-id").value;
+					let text = document.getElementById("todo-text").value;
+					let priority = document.getElementById("todo-priority").value;
+					if (id){ //edit
+						let index = this.todos.findIndex((todo => todo.id == id));
+						this.todos[index].text = text;
+						this.todos[index].priority = priority;
+					}
+					else { //add
+						let lastId = 0;
+						let lastTodo = this.todos.sort()[0];
+						if (lastTodo){
+							lastId = lastTodo.id;
+						}
+						this.todos.push({
+							id: lastId + 1,
+							text: text,
+							priority: priority
+						});
+					}
 				},
 				close(){
 					document.getElementById("edit-todo").style.width = "0";
