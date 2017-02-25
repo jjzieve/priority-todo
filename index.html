@@ -51,6 +51,20 @@
 				max-width: 25%;
 				border-radius: 5rem;
 			}
+			
+			/* The side navigation menu */
+			.sidenav {
+			    height: 100%; /* 100% Full-height */
+			    width: 0; /* 0 width - change this with JavaScript */
+			    position: fixed; /* Stay in place */
+			    z-index: 1; /* Stay on top */
+			    top: 0;
+			    left: 0;
+			    background-color: white; /* Black*/
+			    overflow-x: hidden; /* Disable horizontal scroll */
+			    padding-top: 60px; /* Place content 60px from the top */
+			    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+			}
 		</style>
 	</head>
 	<body>
@@ -59,7 +73,7 @@
 				<div class="todo-container" v-for="todo in sortedTodos">
 					<div 
 						class="todo" 
-						v-bind:class="todo.priority"
+						v-bind:class="todo.priority_class"
 						v-on:click="edit(todo)"
 					>
 						{{ todo.text }}
@@ -81,88 +95,70 @@
 			</div>
 		</div>
 
-		
+		<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="#">About</a>
+  <a href="#">Services</a>
+  <a href="#">Clients</a>
+  <a href="#">Contact</a>
+</div>
+
+<!-- Use any element to open the sidenav -->
+<!--<span onclick="openNav()">open</span>-->
 		<script src="https://unpkg.com/vue/dist/vue.js"></script>
 		<script>
 		
-		      //  function route(path,handler){
-        //     routes[path] = {template: template, handler: handler};
-        // }
-        
-        // route('/', 'home', () => {
-        //     console.log('home');
-        //     const greeting = 'yo';
-        //     return greeting;
-        // });
-        // route('/spots', 'template1', () => {
-        //     console.log('spots');
-        //     const greeting = 'yo';
-        //     // return document.getElementById('template1').innerHTML;
-        //     return `<h1>Page 1: ${greeting} </h1><p ${greeting}</p>`;
-        // });
-        // route('/spot', 'template2', () => {
-        //     console.log('add spot');
-        // });
-        // route('/spot/:id', 'template2', () => {
-        //     console.log('edit spot');
-        // });
-        
-        // let el = null;
-        // function router () {
-        //     // Lazy load view element:
-        //     el = el || document.getElementById('view');
-        //     // Current route url (getting rid of '#' in hash as well):
-        //     let url = window.location.hash.slice(1) || '/';
-        //     // Get route by url:
-        //     let route = routes[url];
-        //     // Do we have both a view and a route?
-        //     if (el && route.handler) {
-        //         // Render route template with John Resig's template engine:
-        //         el.innerHTML = route.handler();
+		//  Vue.component('todo-item', {
+        //   template: '\
+        //     <li>\
+        //       {{ title }}\
+        //       <button v-on:click="$emit(\'remove\')">X</button>\
+        //     </li>\
+        //   ',
+        //   props: ['title']
+        // })
+        // new Vue({
+        //   el: '#todo-list-example',
+        //   data: {
+        //     newTodoText: '',
+        //     todos: [
+        //       'Do the dishes',
+        //       'Take out the trash',
+        //       'Mow the lawn'
+        //     ]
+        //   },
+        //   methods: {
+        //     addNewTodo: function () {
+        //       this.todos.push(this.newTodoText)
+        //       this.newTodoText = ''
         //     }
-        // }
-        // // Listen on hash change:
-        // window.addEventListener('hashchange', router);
-        // // Listen on page load:
-        // window.addEventListener('load', router);
-		
-			var PRIORITY_ENUM = {
-				'high-priority': 1,
-				'medium-priority': 2,
-				'low-priority': 3,
-			};
-			
-			// Vue.component('todo-edit', {
-			// 	template: '<div class="{{ priorityClass }}' v-on
-			// })
+        //   }
+        // })
 
+			var PRIORITY_ENUM = ['high-priority', 'medium-priority', 'low-priority'];
+			
 			var app = new Vue({
 			  el: '#app',
 			  data: {
 			  	todos: [
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test', priority: 'high-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test2', priority: 'low-priority' },
-			  		{ text: 'Test3', priority: 'medium-priority' }
+			  		{ id: 1, text: 'Test2', priority: 2 },
+			  		{ id: 2, text: 'Test1', priority: 0 },
+			  		{ id: 3, text: 'Test2', priority: 2 },
+			  		{ id: 4, text: 'Test2', priority: 2 },
+			  		{ id: 5, text: 'Test2', priority: 2 },
+			  		{ id: 6, text: 'Test3', priority: 1 }
 			  	]
 			  },
 			  computed: {
 			  	sortedTodos() {
-			  		return this.todos.sort((a, b) => {
-			  			return PRIORITY_ENUM[a.priority] - PRIORITY_ENUM[b.priority];
-			  		});
+			  		return this.todos
+				  		.sort((a, b) => {
+				  			return a.priority - b.priority;
+				  		})
+				  		.map((todo) => {
+				  			todo.priority_class = PRIORITY_ENUM[todo.priority];
+				  			return todo;
+				  		});
 			  	}
 			  },
 			  methods: {
@@ -177,6 +173,16 @@
 				}
 			  }
 			})
+			
+			/* Set the width of the side navigation to 250px */
+function openNav() {
+    document.getElementById("mySidenav").style.width = "100%";
+}
+
+/* Set the width of the side navigation to 0 */
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+}
 		</script>
 
 	</body>

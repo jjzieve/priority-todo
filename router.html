@@ -9,26 +9,63 @@
     </head>
     <body>    
         <div id="app">
-          <h1>Hello App!</h1>
-          <p>
-            <!-- use router-link component for navigation. -->
-            <!-- specify the link by passing the `to` prop. -->
-            <!-- <router-link> will be rendered as an `<a>` tag by default -->
-            <router-link to="/foo">Go to Foo</router-link>
-            <router-link to="/bar">Go to Bar</router-link>
-          </p>
           <!-- route outlet -->
           <!-- component matched by the route will render here -->
           <router-view></router-view>
+          <div id="todo-list-example">
+              <input
+                v-model="newTodoText"
+                v-on:keyup.enter="addNewTodo"
+                placeholder="Add a todo"
+              >
+              <ul>
+                <li
+                  is="todo-item"
+                  v-for="(todo, index) in todos"
+                  v-bind:shit="todo"
+                  v-on:remove="todos.splice(index, 1)"
+                ></li>
+              </ul>
+            </div>
         </div>
     </body>
     <script>
-        // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
+        Vue.component('todo-item', {
+          template: '\
+            <li>\
+              {{ shit }}\
+              <button v-on:click="$emit(\'remove\')">X</button>\
+            </li>\
+          ',
+          props: ['shit']
+        })
+        new Vue({
+          el: '#todo-list-example',
+          data: {
+            newTodoText: '',
+            todos: [
+              'Do the dishes',
+              'Take out the trash',
+              'Mow the lawn'
+            ]
+          },
+          methods: {
+            addNewTodo: function () {
+              this.todos.push(this.newTodoText)
+              this.newTodoText = ''
+            }
+          }
+        })
 
-        // 1. Define route components.
-        // These can be imported from other files
-        const Foo = { template: '<div>foo</div>' }
-        const Bar = { template: '<div>bar</div>' }
+        // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
+        
+        const TodoList = { template: '<div>Todo List</div>'}
+
+       
+        const EditTodo = {
+          props: ['id'],
+          template: '<div>Edit Todo {{ id }}</div>' 
+        }
         
         // 2. Define some routes
         // Each route should map to a component. The "component" can
@@ -36,8 +73,9 @@
         // Vue.extend(), or just a component options object.
         // We'll talk about nested routes later.
         const routes = [
-          { path: '/foo', component: Foo },
-          { path: '/bar', component: Bar }
+          { path: '/', component: TodoList },
+          { path: '/todo', component: EditTodo },
+          { path: '/todo/:id', component: EditTodo, props: true }
         ]
         
         // 3. Create the router instance and pass the `routes` option
@@ -50,12 +88,25 @@
         // 4. Create and mount the root instance.
         // Make sure to inject the router with the router option to make the
         // whole app router-aware.
-        const app = new Vue({
-          router
-        }).$mount('#app')
+        // const app = new Vue({
+        //   router
+        // }).$mount('#app')
         
-        router.push('bar');
+        // const app = new Vue({
+        //     el: '#app',
+        //     data: {
+        //       todos: [
+        //       	{ text: 'Test2', priority: 'low-priority' },
+        //       	{ text: 'Test', priority: 'high-priority' },
+        //       	{ text: 'Test2', priority: 'low-priority' },
+        //       	{ text: 'Test2', priority: 'low-priority' },
+        //       	{ text: 'Test2', priority: 'low-priority' },
+        //       	{ text: 'Test2', priority: 'low-priority' },
+        //       ]
+        //     },
+        //     router: router
+        // });
+        // router.push('bar');
         
-        // Now the app has started!
     </script>
 </html>
