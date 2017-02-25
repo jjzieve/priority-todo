@@ -52,18 +52,59 @@
 				border-radius: 5rem;
 			}
 			
-			/* The side navigation menu */
-			.sidenav {
+			#edit-todo {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
 			    height: 100%; /* 100% Full-height */
 			    width: 0; /* 0 width - change this with JavaScript */
 			    position: fixed; /* Stay in place */
 			    z-index: 1; /* Stay on top */
 			    top: 0;
 			    left: 0;
-			    background-color: white; /* Black*/
+			    background-color: #636c72; /* Black*/
 			    overflow-x: hidden; /* Disable horizontal scroll */
-			    padding-top: 60px; /* Place content 60px from the top */
 			    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+			}
+			
+			input,
+			select,
+			textarea {
+			    background-color: #fff;
+			    border-color: #e0e0e0;
+			    -webkit-border-radius: 3px;
+			    border-radius: 3px;
+			    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+			    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+			    border-width: 1px;
+			    border-style: solid;
+			    color: #474e57;
+			    font-size: 16px;
+			    font-weight: 400;
+			    padding: 10px;
+			    width: 100%;
+			    box-sizing:border-box;
+			    margin: 5px;
+			}
+			
+			.closebtn {
+				float: right;
+				font-size: 2rem;
+				color: white;
+				text-decoration: none;
+				
+			}
+			
+			input[type="submit"]:hover {
+				background-color: #489174;
+				
+			}
+			input[type="submit"] {
+				border: none;
+				background-color: #0E573A;
+				color: white;
+				cursor: pointer;
 			}
 		</style>
 	</head>
@@ -78,63 +119,32 @@
 					>
 						{{ todo.text }}
 					</div>
-					<div class="todo-action" v-on:click="remove(todo)">X</div>
+					<div class="todo-action" v-on:click="remove(todo)">&times;</div>
 				</div>
 				<div class="todo-container">
-					<!--<div class="new todo">-->
-					<!--	<input>-->
-					<!--	<select>-->
-					<!--		<option value="high-priority">High priority</option>-->
-					<!--		<option value="medium-priority">Medium priority</option>-->
-					<!--		<option value="low-priority">Low priority</option>-->
-					<!--<input date>-->
-					<!--	</select>-->
-					<!--</div>-->
 					<div class="todo-action add" v-on:click="add">+</div>
 				</div>
 			</div>
 		</div>
 
-		<div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <a href="#">About</a>
-  <a href="#">Services</a>
-  <a href="#">Clients</a>
-  <a href="#">Contact</a>
-</div>
+		<div id="edit-todo">
+			<form>
+				<a href="javascript:void(0);" class="closebtn" onclick="closeEdit()">&times;</a>
+				<textarea class="todo-textarea"></textarea>
+				<select class="todo-priority-select">
+					<option value=0>High priority</option>
+					<option value=1>Medium priority</option>
+					<option value=2>Low priority</option>
+				</select>
+				<input type="submit">
+			</form>
+		</div>
 
-<!-- Use any element to open the sidenav -->
-<!--<span onclick="openNav()">open</span>-->
 		<script src="https://unpkg.com/vue/dist/vue.js"></script>
 		<script>
-		
-		//  Vue.component('todo-item', {
-        //   template: '\
-        //     <li>\
-        //       {{ title }}\
-        //       <button v-on:click="$emit(\'remove\')">X</button>\
-        //     </li>\
-        //   ',
-        //   props: ['title']
-        // })
-        // new Vue({
-        //   el: '#todo-list-example',
-        //   data: {
-        //     newTodoText: '',
-        //     todos: [
-        //       'Do the dishes',
-        //       'Take out the trash',
-        //       'Mow the lawn'
-        //     ]
-        //   },
-        //   methods: {
-        //     addNewTodo: function () {
-        //       this.todos.push(this.newTodoText)
-        //       this.newTodoText = ''
-        //     }
-        //   }
-        // })
-
+			function closeEdit(){
+				document.getElementById("edit-todo").style.width = "0";
+			}
 			var PRIORITY_ENUM = ['high-priority', 'medium-priority', 'low-priority'];
 			
 			var app = new Vue({
@@ -163,26 +173,20 @@
 			  },
 			  methods: {
 				add() {
-					console.log('add');
+					document.getElementById("edit-todo").style.width = "100%";
 				},
 				edit(todo) {
 					console.log('edit');
+					document.getElementById("edit-todo").style.width = "100%";
 				},
 				remove(todo) {
 					this.todos.splice(this.todos.indexOf(todo), 1)
+				},
+				close(){
+					document.getElementById("edit-todo").style.width = "0";
 				}
 			  }
 			})
-			
-			/* Set the width of the side navigation to 250px */
-function openNav() {
-    document.getElementById("mySidenav").style.width = "100%";
-}
-
-/* Set the width of the side navigation to 0 */
-function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-}
 		</script>
 
 	</body>
