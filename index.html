@@ -107,10 +107,18 @@
 				color: white;
 				cursor: pointer;
 			}
+
 		</style>
 	</head>
 	<body>
-		<div id="view">
+		<div id="login">
+			<form id="login-form">
+				Email: <input id="login-email" type="email">
+				Password: <input id="login-password" type="password">
+				<button id="login-submit">Login</button>
+			</form>
+		</div>
+		<div id="view" style="display:none;">
 			<div id="app">
 				<div class="todo-container" v-for="todo in sortedTodos">
 					<div 
@@ -148,7 +156,7 @@
 			function closeEdit(){
 				document.getElementById("edit-todo").style.width = "0";
 			}
-			
+
 			var PRIORITY_ENUM = ['high-priority', 'medium-priority', 'low-priority'];
 			
 			// Initialize Firebase
@@ -161,108 +169,117 @@
 			};
 			firebase.initializeApp(config);
 
-			var email = window.prompt("Email?");
-			var password = window.prompt("Password?");
+			document.getElementById("login-form").onsubmit = function (event){
+				event.preventDefault();
+				main(
+					document.getElementById('login-email').value,
+					document.getElementById('login-password').value
+				);
+			}
 
-			firebase.auth().signInWithEmailAndPassword(
-				email,
-				password
-			).catch(function(error) {
-			  // Handle Errors here.
-			  var errorCode = error.code;
-			  var errorMessage = error.message;
-			  console.log(errorMessage);
-			}).then(() => {
-				var todosRef = firebase.database().ref('todos');
-				todosRef.once("value", function(snapshot) {
-					var todos = [];
-					snapshot.forEach(function(data) {
-						let todo = data.val();
-						todo["id"] = data.key;
-						todos.push(todo);
-					});
+			function main(email, password){
+				firebase.auth().signInWithEmailAndPassword(
+					email,
+					password
+				).catch(function(error) {
+				  // Handle Errors here.
+				  var errorCode = error.code;
+				  var errorMessage = error.message;
+				  console.log(errorMessage);
+				}).then(() => {
+					document.getElementById('login').style = "display:none;";
+					document.getElementById('view').style = "";
+					var todosRef = firebase.database().ref('todos');
+					todosRef.once("value", function(snapshot) {
+						var todos = [];
+						snapshot.forEach(function(data) {
+							let todo = data.val();
+							todo["id"] = data.key;
+							todos.push(todo);
+						});
 
-					var app = new Vue({
-						el: '#app',
-						data: {
-							todos: todos
-						},
-						computed: {
-							sortedTodos() {
-								return this.todos
-									.sort((a, b) => {
-										return a.priority - b.priority;
-									})
-									.map((todo) => {
-										todo.priority_class = PRIORITY_ENUM[todo.priority];
-										return todo;
-									});
-							}
-						},
-						methods: {
-							add() {
-								//reset the form
-								document.getElementById("todo-id").value = '';
-								document.getElementById("todo-text").value = '';
-								document.getElementById("todo-priority").value = 2;
-								document.getElementById("edit-todo").style.width = "100%";
+						var app = new Vue({
+							el: '#app',
+							data: {
+								todos: todos
 							},
-							edit(todo) {
-								// populate the form
-								document.getElementById("todo-id").value = todo.id;
-								document.getElementById("todo-text").value = todo.text;
-								document.getElementById("todo-priority").value = todo.priority;
-								document.getElementById("edit-todo").style.width = "100%";
-							},
-							remove(todo) {
-								this.todos.splice(this.todos.indexOf(todo), 1);
-								let todoRef = todosRef.child(todo.id);
-								todoRef.remove();
-							},
-							submit(event) {
-								event.preventDefault();
-								document.getElementById("edit-todo").style.width = "0";
-
-								let id = document.getElementById("todo-id").value;
-								let text = document.getElementById("todo-text").value;
-								let priority = document.getElementById("todo-priority").value;
-								if (id){ //edit
-									let index = this.todos.findIndex((todo => todo.id == id));
-									this.todos[index].text = text;
-									this.todos[index].priority = priority;
-
-									let todoRef = todosRef.child(id);
-									todoRef.update({
-										"text": text,
-										"priority": priority
-									});
-								}
-								else { //add
-									let newTodoRef = todosRef.push();
-									newTodoRef.set({
-										"text": text,
-										"priority": priority
-									});
-
-									this.todos.push({
-										id: newTodoRef.key,
-										text: text,
-										priority: priority
-									});
+							computed: {
+								sortedTodos() {
+									return this.todos
+										.sort((a, b) => {
+											return a.priority - b.priority;
+										})
+										.map((todo) => {
+											todo.priority_class = PRIORITY_ENUM[todo.priority];
+											return todo;
+										});
 								}
 							},
-							close(){
-								document.getElementById("edit-todo").style.width = "0";
+							methods: {
+								add() {
+									//reset the form
+									document.getElementById("todo-id").value = '';
+									document.getElementById("todo-text").value = '';
+									document.getElementById("todo-priority").value = 2;
+									document.getElementById("edit-todo").style.width = "100%";
+								},
+								edit(todo) {
+									// populate the form
+									document.getElementById("todo-id").value = todo.id;
+									document.getElementById("todo-text").value = todo.text;
+									document.getElementById("todo-priority").value = todo.priority;
+									document.getElementById("edit-todo").style.width = "100%";
+								},
+								remove(todo) {
+									this.todos.splice(this.todos.indexOf(todo), 1);
+									let todoRef = todosRef.child(todo.id);
+									todoRef.remove();
+								},
+								submit(event) {
+									event.preventDefault();
+									document.getElementById("edit-todo").style.width = "0";
+
+									let id = document.getElementById("todo-id").value;
+									let text = document.getElementById("todo-text").value;
+									let priority = document.getElementById("todo-priority").value;
+									if (id){ //edit
+										let index = this.todos.findIndex((todo => todo.id == id));
+										this.todos[index].text = text;
+										this.todos[index].priority = priority;
+
+										let todoRef = todosRef.child(id);
+										todoRef.update({
+											"text": text,
+											"priority": priority
+										});
+									}
+									else { //add
+										let newTodoRef = todosRef.push();
+										newTodoRef.set({
+											"text": text,
+											"priority": priority
+										});
+
+										this.todos.push({
+											id: newTodoRef.key,
+											text: text,
+											priority: priority
+										});
+									}
+								},
+								close(){
+									document.getElementById("edit-todo").style.width = "0";
+								}
 							}
-						}
+						});
+						document.getElementById("submit-todo").onclick = function(event) {
+							app.submit(event);
+						};
+					}, function (errorObject) {
+						console.log("The read failed: " + errorObject.code);
 					});
-					document.getElementById("submit-todo").onclick = function(event) {
-						app.submit(event);
-					};
-				}, function (errorObject) {
-					console.log("The read failed: " + errorObject.code);
 				});
-			});
+			}
 		</script>
 	</body>
 </html>
